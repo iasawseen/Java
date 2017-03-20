@@ -4,22 +4,23 @@
  */
 
 public class DictionaryImpl implements Dictionary {
-    private int tableSize = 10;
-    private int maxListLen = 5;
+
+    private static final int defaultTableSize = 10;
+    private static final int defaultMaxListLen = 5;
+
+    private final int maxListLen;
     private int size = 0;
     private MyLinkedList[] table;
 
     DictionaryImpl() {
-        table = new MyLinkedList[tableSize];
+        this(defaultTableSize, defaultMaxListLen);
     }
 
     DictionaryImpl(int tableSize) {
-        this.tableSize = tableSize;
-        table = new MyLinkedList[tableSize];
+        this(tableSize, defaultMaxListLen);
     }
 
     DictionaryImpl(int tableSize, int maxListLen) {
-        this.tableSize = tableSize;
         this.maxListLen = maxListLen;
         table = new MyLinkedList[tableSize];
     }
@@ -36,28 +37,34 @@ public class DictionaryImpl implements Dictionary {
 
     @Override
     public String get(String key) {
-        if (contains(key)) {
-            return getListByHash(key).get(key);
+        MyLinkedList list = getListByHash(key);
+
+        if (list != null) {
+            return list.get(key);
         }
         return null;
     }
 
     @Override
     public String put(String key, String value) {
-        if (contains(key)) {
-            return getListByHash(key).put(key, value);
-        } else {
-            if (getListByHash(key) == null) {
-                table[getHashModulo(key)] = new MyLinkedList();
-            }
+        MyLinkedList list = getListByHash(key);
 
-            getListByHash(key).put(key, value);
-            size++;
-
-            if (getListByHash(key).getSize() > maxListLen) {
-                reHash();
-            }
+        if (list == null) {
+            list = new MyLinkedList();
+            table[getHashModulo(key)] = list;
         }
+
+        String oldValue = list.put(key, value);
+        if (oldValue != null) {
+            return oldValue;
+        }
+
+        size++;
+
+        if (list.getSize() > maxListLen) {
+            reHash();
+        }
+
         return null;
     }
 
@@ -72,12 +79,12 @@ public class DictionaryImpl implements Dictionary {
 
     @Override
     public void clear() {
-        table = new MyLinkedList[tableSize];
+        table = new MyLinkedList[defaultTableSize];
         size = 0;
     }
 
     int getTableSize() {
-        return tableSize;
+        return table.length;
     }
 
     private MyLinkedList getListByHash(String key) {
@@ -85,18 +92,17 @@ public class DictionaryImpl implements Dictionary {
     }
 
     private int getHashModulo(String key) {
-        return key.hashCode() % tableSize;
+        return key.hashCode() % table.length;
     }
 
     private void reHash() {
-        int newTableSize = tableSize * 2;
+        int newTableSize = table.length * 2;
         DictionaryImpl newDict = new DictionaryImpl(newTableSize);
-        for (int i = 0; i < tableSize; i++) {
+        for (int i = 0; i < table.length; i++) {
             for (Object key : table[i]) {
                 newDict.put((String) key, table[i].get((String) key));
             }
         }
-        tableSize = newTableSize;
         table = newDict.table;
     }
 }

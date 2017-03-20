@@ -8,15 +8,10 @@ import java.util.NoSuchElementException;
 
 class MyLinkedList implements Iterable {
     private Node start;
-    private int size;
-
-    MyLinkedList() {
-        start = new Node();
-        size = 0;
-    }
+    private int size = 0;
 
     public Iterator iterator() {
-        return new MyIterator();
+        return new MyIterator(start);
     }
 
     boolean contains(String key) {
@@ -90,7 +85,7 @@ class MyLinkedList implements Iterable {
 
     private void removeNode(Node node) {
         if (size == 1) {
-            start = new Node();
+            start = null;
         } else if (node.getPrev() == null) {
             start = node.getNext();
             start.setPrev(null);
@@ -106,10 +101,10 @@ class MyLinkedList implements Iterable {
         size--;
     }
 
-    class MyIterator implements Iterator {
+    static class MyIterator implements Iterator {
         private Node cursor;
 
-        MyIterator() {
+        MyIterator(Node start) {
             cursor = start;
         }
 
@@ -128,13 +123,11 @@ class MyLinkedList implements Iterable {
         }
     }
 
-    private class Node {
+    private static class Node {
         private Node prev;
         private Node next;
-        private String key;
+        private final String key;
         private String value;
-
-        Node() {}
 
         Node(String key, String value) {
             this.key = key;
@@ -171,6 +164,4 @@ class MyLinkedList implements Iterable {
             this.value = value;
         }
     }
-
-
 }
