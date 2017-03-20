@@ -5,19 +5,19 @@
 
 public class DictionaryImpl implements Dictionary {
 
-    private static final int defaultTableSize = 10;
-    private static final int defaultMaxListLen = 5;
+    private static final int DEFAULT_TABLE_SIZE = 10;
+    private static final int DEFAULT_MAX_LIST_LEN = 5;
 
     private final int maxListLen;
     private int size = 0;
     private MyLinkedList[] table;
 
     DictionaryImpl() {
-        this(defaultTableSize, defaultMaxListLen);
+        this(DEFAULT_TABLE_SIZE, DEFAULT_MAX_LIST_LEN);
     }
 
     DictionaryImpl(int tableSize) {
-        this(tableSize, defaultMaxListLen);
+        this(tableSize, DEFAULT_MAX_LIST_LEN);
     }
 
     DictionaryImpl(int tableSize, int maxListLen) {
@@ -79,7 +79,7 @@ public class DictionaryImpl implements Dictionary {
 
     @Override
     public void clear() {
-        table = new MyLinkedList[defaultTableSize];
+        table = new MyLinkedList[DEFAULT_TABLE_SIZE];
         size = 0;
     }
 
